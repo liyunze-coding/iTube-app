@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
 
                 if (result) {
                     Toast.makeText(this@MainActivity, "Successfully logged in!", Toast.LENGTH_SHORT).show()
-                    val loginIntent = Intent(this, YoutubeActivity::class.java)
+                    val loginIntent = Intent(this, HomeActivity::class.java)
                     startActivity(loginIntent)
                 } else {
                     Toast.makeText(this@MainActivity, "The user does not exist.", Toast.LENGTH_SHORT).show()

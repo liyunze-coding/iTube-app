@@ -35,10 +35,17 @@ class SignupActivity : AppCompatActivity() {
             val username = sUsernameEditText.text.toString()
             val password = sPasswordEditText.text.toString()
             val confirmPassword = sConfirmPasswordEditText.text.toString()
+            val usernameExists = db.userAlreadyExists(username)
 
-            val passwordMatch = password == confirmPassword
-
-            if (passwordMatch) {
+            if (password != confirmPassword)
+            {
+                Toast.makeText(this@SignupActivity, "Two passwords do not match!", Toast.LENGTH_SHORT).show()
+            }
+            else if (usernameExists){
+                Toast.makeText(this@SignupActivity, "Username already exists!", Toast.LENGTH_SHORT).show()
+            }
+            else
+            {
                 val userObj = User(username, password)
 
                 val result: Long = db.insertUser(userObj)
@@ -47,9 +54,6 @@ class SignupActivity : AppCompatActivity() {
                 } else {
                     Toast.makeText(this, "Registration error.", Toast.LENGTH_SHORT).show()
                 }
-            }
-            else {
-                Toast.makeText(this@SignupActivity, "Two passwords do not match!", Toast.LENGTH_SHORT).show()
             }
         }
     }

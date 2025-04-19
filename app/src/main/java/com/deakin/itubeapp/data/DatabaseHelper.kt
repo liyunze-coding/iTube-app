@@ -32,6 +32,33 @@ class DatabaseHelper(
         onCreate(sqLiteDatabase)
     }
 
+    fun userAlreadyExists(username: String): Boolean {
+        val db = this.readableDatabase
+        var cursor: Cursor? = null
+        var userExists = false
+
+        try {
+            cursor = db.query(
+                Util.TABLE_NAME,
+                arrayOf(Util.USER_ID),
+                "${Util.USERNAME} = ?",
+                arrayOf(username),
+                null,
+                null,
+                null
+            )
+
+            userExists = cursor.count > 0
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            cursor?.close()
+            db.close()
+        }
+
+        return userExists
+    }
+
     fun insertUser(user: User): Long {
         val db: SQLiteDatabase = this.writableDatabase
         val contentValues: ContentValues = ContentValues().apply {
@@ -46,32 +73,6 @@ class DatabaseHelper(
         db.close()
 
         return newRowId
-    }
-
-    fun insertUserRaw(user: User): Long {
-        val db = this.writableDatabase
-        var rowId = -1L
-
-        try {
-            val insertSQL = """
-            INSERT INTO ${Util.TABLE_NAME} (${Util.USERNAME}, ${Util.PASSWORD}) 
-            VALUES (?, ?)
-        """.trimIndent()
-
-            db.execSQL(insertSQL, arrayOf(user.username, user.password))
-
-            val cursor = db.rawQuery("SELECT last_insert_rowid()", null)
-            if (cursor.moveToFirst()) {
-                rowId = cursor.getLong(0)
-            }
-            cursor.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            db.close()
-        }
-
-        return rowId
     }
 
     fun fetchUser(username: String, password: String): Boolean {
