@@ -141,7 +141,7 @@ class DatabaseHelper(
             cursor = db.query(
                 /* table = */ Util.PLAYLIST_TABLE_NAME,
                 /* columns = */ arrayOf(Util.PLAYLIST_ID),
-                /* selection = */ "${Util.VIDEO_ID} = ? AND ${Util.USER_ID}",
+                /* selection = */ "${Util.VIDEO_ID} = ? AND ${Util.USER_ID} = ?",
                 /* selectionArgs = */ arrayOf(videoId, userId),
                 /* groupBy = */ null,
                 /* having = */ null,
@@ -157,5 +157,37 @@ class DatabaseHelper(
         }
 
         return videoExists
+    }
+
+    fun getPlaylist(userId: String): List<String> {
+        val db = this.readableDatabase
+        var cursor: Cursor? = null
+        val playlistArray = mutableListOf<String>()
+
+        try {
+            cursor = db.query(
+                Util.PLAYLIST_TABLE_NAME,
+                arrayOf(Util.VIDEO_ID),
+                "${Util.USER_ID} = ?",
+                arrayOf(userId),
+                null,
+                null,
+                null
+            )
+
+            if (cursor.moveToFirst()) {
+                do {
+                    val videoId = cursor.getString(cursor.getColumnIndexOrThrow(Util.VIDEO_ID))
+                    playlistArray.add(videoId)
+                } while (cursor.moveToNext())
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            cursor?.close()
+            db.close()
+        }
+
+        return playlistArray
     }
 }

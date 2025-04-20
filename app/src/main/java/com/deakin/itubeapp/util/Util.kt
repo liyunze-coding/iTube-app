@@ -1,7 +1,7 @@
 package com.deakin.itubeapp.util
 
 object Util {
-    const val DATABASE_VERSION = 2
+    const val DATABASE_VERSION = 3
     const val DATABASE_NAME = "user_db"
     const val USER_TABLE_NAME = "users"
     const val USER_ID = "user_id"
