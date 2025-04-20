@@ -11,6 +11,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.deakin.itubeapp.data.DatabaseHelper
 
 class PlaylistActivity : AppCompatActivity() {
+    fun videoIdsToURL(videoIds: List<String>): List<String> {
+        return videoIds.map { videoId -> "https://youtu.be/$videoId" }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -27,11 +31,10 @@ class PlaylistActivity : AppCompatActivity() {
         val userId: String = intent.getStringExtra("USER_ID") ?: "-1"
 
         val playlist: List<String> = db.getPlaylist(userId)
-
-        Log.d("PlaylistDebug", playlist.joinToString(", "))
+        val playlistURLs = videoIdsToURL(playlist)
         val playlistView = findViewById<RecyclerView>(R.id.PlaylistRecyclerView)
 
-        val adapter = RecyclerViewAdapter(playlist, this)
+        val adapter = RecyclerViewAdapter(playlistURLs, this)
         playlistView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         playlistView.adapter = adapter
     }
