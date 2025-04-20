@@ -31,14 +31,16 @@ class MainActivity : AppCompatActivity() {
 
         loginButton.setOnClickListener {
             try {
-                val result = db.fetchUser(
+                val userId = db.fetchUser(
                     usernameEditText.text.toString(),
                     passwordEditText.text.toString()
                 )
 
-                if (result) {
+                if (userId > -1) {
                     Toast.makeText(this@MainActivity, "Successfully logged in!", Toast.LENGTH_SHORT).show()
-                    val loginIntent = Intent(this, HomeActivity::class.java)
+                    val loginIntent = Intent(this, HomeActivity::class.java).apply {
+                        putExtra("USER_ID", userId.toString())
+                    }
                     startActivity(loginIntent)
                 } else {
                     Toast.makeText(this@MainActivity, "The user does not exist.", Toast.LENGTH_SHORT).show()

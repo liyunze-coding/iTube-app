@@ -15,19 +15,31 @@ class DatabaseHelper(
 
     override fun onCreate(sqLiteDatabase: SQLiteDatabase) {
         val CREATE_USER_TABLE = """
-            CREATE TABLE ${Util.TABLE_NAME} (
+            CREATE TABLE ${Util.USER_TABLE_NAME} (
                 ${Util.USER_ID} INTEGER PRIMARY KEY AUTOINCREMENT,
                 ${Util.USERNAME} TEXT,
                 ${Util.PASSWORD} TEXT
             )
         """.trimIndent()
 
+        val CREATE_PLAYLIST_TABLE = """
+            CREATE TABLE ${Util.PLAYLIST_TABLE_NAME} (
+                ${Util.PLAYLIST_ID} INTEGER PRIMARY KEY AUTOINCREMENT,
+                ${Util.USER_ID} INTEGER NOT NULL,
+                ${Util.VIDEO_ID} TEXT,
+                FOREIGN KEY (${Util.USER_ID}) REFERENCES ${Util.USER_TABLE_NAME}(${Util.USER_ID})
+            )
+        """.trimIndent()
+
         sqLiteDatabase.execSQL(CREATE_USER_TABLE)
+        sqLiteDatabase.execSQL(CREATE_PLAYLIST_TABLE)
     }
 
     override fun onUpgrade(sqLiteDatabase: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        val DROP_USER_TABLE = "DROP TABLE IF EXISTS ${Util.TABLE_NAME}"
+        val DROP_USER_TABLE = "DROP TABLE IF EXISTS ${Util.USER_TABLE_NAME}"
+        val DROP_PLAYLIST_TABLE = "DROP TABLE IF EXISTS ${Util.PLAYLIST_TABLE_NAME}"
         sqLiteDatabase.execSQL(DROP_USER_TABLE)
+        sqLiteDatabase.execSQL(DROP_PLAYLIST_TABLE)
 
         onCreate(sqLiteDatabase)
     }
@@ -39,7 +51,7 @@ class DatabaseHelper(
 
         try {
             cursor = db.query(
-                Util.TABLE_NAME,
+                Util.USER_TABLE_NAME,
                 arrayOf(Util.USER_ID),
                 "${Util.USERNAME} = ?",
                 arrayOf(username),
@@ -67,7 +79,7 @@ class DatabaseHelper(
         }
 
         val newRowId: Long = db.insert(
-            /* table = */ Util.TABLE_NAME,
+            /* table = */ Util.USER_TABLE_NAME,
             /* nullColumnHack = */ null,
             /* values = */ contentValues)
         db.close()
@@ -75,14 +87,14 @@ class DatabaseHelper(
         return newRowId
     }
 
-    fun fetchUser(username: String, password: String): Boolean {
+    fun fetchUser(username: String, password: String): Int {
         val db = this.readableDatabase
         var cursor: Cursor? = null
-        var userExists = false
+        var userId = -1
 
         try {
             cursor = db.query(
-                Util.TABLE_NAME,
+                Util.USER_TABLE_NAME,
                 arrayOf(Util.USER_ID),
                 "${Util.USERNAME} = ? AND ${Util.PASSWORD} = ?",
                 arrayOf(username, password),
@@ -90,12 +102,10 @@ class DatabaseHelper(
                 null,
                 null
             )
-//            val cursor = db.rawQuery(
-//                "SELECT * FROM ${Util.TABLE_NAME} WHERE ${Util.USERNAME} = ? AND ${Util.PASSWORD} = ?",
-//                arrayOf(username, password)
-//            )
 
-            userExists = cursor.count > 0
+            if (cursor.moveToFirst()) {
+                userId = cursor.getInt(cursor.getColumnIndexOrThrow(Util.USER_ID))
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {
@@ -103,7 +113,49 @@ class DatabaseHelper(
             db.close()
         }
 
-        return userExists
+        return userId
     }
 
+    fun insertVideoToPlaylist(userId: String, videoId: String): Long {
+        val db: SQLiteDatabase = this.writableDatabase
+        val contentValues: ContentValues = ContentValues().apply {
+            put(Util.USER_ID, userId)
+            put(Util.VIDEO_ID, videoId)
+        }
+
+        val newRowId: Long = db.insert(
+            /* table = */ Util.PLAYLIST_TABLE_NAME,
+            /* nullColumnHack = */ null,
+            /* values = */ contentValues)
+        db.close()
+
+        return newRowId
+    }
+
+    fun checkVideoExists(userId: String, videoId: String): Boolean {
+        val db = this.readableDatabase
+        var cursor: Cursor? = null
+        var videoExists = false
+
+        try {
+            cursor = db.query(
+                /* table = */ Util.PLAYLIST_TABLE_NAME,
+                /* columns = */ arrayOf(Util.PLAYLIST_ID),
+                /* selection = */ "${Util.VIDEO_ID} = ? AND ${Util.USER_ID}",
+                /* selectionArgs = */ arrayOf(videoId, userId),
+                /* groupBy = */ null,
+                /* having = */ null,
+                /* orderBy = */ null
+            )
+
+            videoExists = cursor.count > 0
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            cursor?.close()
+            db.close()
+        }
+
+        return videoExists
+    }
 }

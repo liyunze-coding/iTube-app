@@ -37,19 +37,19 @@
         app:layout_constraintVertical_bias="0.42" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/PlayButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="MY PLAYLIST"
+        android:text="PLAY"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.821" />
+        app:layout_constraintVertical_bias="0.644" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/addToPlaylistButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="ADD TO PLAYLIST"
@@ -61,14 +61,15 @@
         app:layout_constraintVertical_bias="0.73" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/myPlaylistButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="PLAY"
+        android:text="MY PLAYLIST"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.644" />
+        app:layout_constraintVertical_bias="0.821" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
