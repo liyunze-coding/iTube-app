@@ -49,7 +49,7 @@ class SignupActivity : AppCompatActivity() {
                 val userObj = User(username, password)
 
                 val result: Long = db.insertUser(userObj)
-                if (result > 0) {
+                if (result > -1) {
                     Toast.makeText(this, "Registered successfully!", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, "Registration error.", Toast.LENGTH_SHORT).show()

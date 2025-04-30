@@ -166,13 +166,13 @@ class DatabaseHelper(
 
         try {
             cursor = db.query(
-                Util.PLAYLIST_TABLE_NAME,
-                arrayOf(Util.VIDEO_ID),
-                "${Util.USER_ID} = ?",
-                arrayOf(userId),
-                null,
-                null,
-                null
+                /* table = */ Util.PLAYLIST_TABLE_NAME,
+                /* columns = */ arrayOf(Util.VIDEO_ID),
+                /* selection = */ "${Util.USER_ID} = ?",
+                /* selectionArgs = */ arrayOf(userId),
+                /* groupBy = */ null,
+                /* having = */ null,
+                /* orderBy = */ null
             )
 
             if (cursor.moveToFirst()) {
